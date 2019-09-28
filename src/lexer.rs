@@ -158,6 +158,29 @@ mod tests {
 
     use crate::token::Token;
 
+    fn run_lexer_test(
+        input: String,
+        expected: Vec<Token>,
+    )
+    {
+        let mut lexer = Lexer::from_str(input);
+        let mut lexed_tokens = vec![];
+
+        loop {
+            let token = lexer.next_token();
+
+            if token == Token::Eof {
+                lexed_tokens.push(token);
+                break;
+            } else if token == Token::Illegal {
+                panic!()
+            } else {
+                lexed_tokens.push(token);
+            }
+        }
+        assert_eq!(lexed_tokens, expected);
+    }
+
     #[test]
     fn test_next_token_basics() {
         let input = "=+(){},;-!*/<>".to_owned();
@@ -180,26 +203,11 @@ mod tests {
             Token::Eof,
         ];
 
-        let mut lexer = Lexer::from_str(input);
-        let mut lexed_tokens = vec![];
-
-        loop {
-            let token = lexer.next_token();
-
-            if token == Token::Eof {
-                lexed_tokens.push(token);
-                break;
-            } else if token == Token::Illegal {
-                panic!()
-            } else {
-                lexed_tokens.push(token);
-            }
-        }
-        assert_eq!(lexed_tokens, expected);
+        run_lexer_test(input, expected);
     }
 
     #[test]
-    fn test_next_token_01() {
+    fn test_next_token_idents() {
         let input = "
             let five = 5;
             let ten = 10;
@@ -271,26 +279,11 @@ mod tests {
             Token::Eof,
         ];
 
-        let mut lexer = Lexer::from_str(input);
-        let mut lexed_tokens = vec![];
-
-        loop {
-            let token = lexer.next_token();
-
-            if token == Token::Eof {
-                lexed_tokens.push(token);
-                break;
-            } else if token == Token::Illegal {
-                panic!()
-            } else {
-                lexed_tokens.push(token);
-            }
-        }
-        assert_eq!(lexed_tokens, expected);
+        run_lexer_test(input, expected);
     }
 
     #[test]
-    fn test_next_token_02() {
+    fn test_next_token_more_keywords() {
         let input = "
             if (5 < 10) {
                 return true;
@@ -321,21 +314,6 @@ mod tests {
             Token::Eof,
         ];
 
-        let mut lexer = Lexer::from_str(input);
-        let mut lexed_tokens = vec![];
-
-        loop {
-            let token = lexer.next_token();
-
-            if token == Token::Eof {
-                lexed_tokens.push(token);
-                break;
-            } else if token == Token::Illegal {
-                panic!()
-            } else {
-                lexed_tokens.push(token);
-            }
-        }
-        assert_eq!(lexed_tokens, expected);
+        run_lexer_test(input, expected);
     }
 }

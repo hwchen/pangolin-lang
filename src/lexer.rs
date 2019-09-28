@@ -193,8 +193,20 @@ mod tests {
     }
 
     #[test]
-    fn test_next_token_ident() {
-        let input = "let five = 5;\nlet ten = 10;\nlet add = fn(x, y) { x + y; };".to_owned();
+    fn test_next_token_complex() {
+        let input = "
+            let five = 5;
+            let ten = 10;
+
+            let add = fn(x, y) {
+                x + y;
+            };
+
+            let result = add(five, ten);
+
+            !-/5;
+            5 < 10 > 5;
+        ".to_owned();
 
         let expected = vec![
             Token::Let,
@@ -202,11 +214,13 @@ mod tests {
             Token::Assign,
             Token::Int("5".into()),
             Token::Semicolon,
+
             Token::Let,
             Token::Ident("ten".into()),
             Token::Assign,
             Token::Int("10".into()),
             Token::Semicolon,
+
             Token::Let,
             Token::Ident("add".into()),
             Token::Assign,
@@ -223,6 +237,31 @@ mod tests {
             Token::Semicolon,
             Token::RBrace,
             Token::Semicolon,
+
+            Token::Let,
+            Token::Ident("result".into()),
+            Token::Assign,
+            Token::Ident("add".into()),
+            Token::LParen,
+            Token::Ident("five".into()),
+            Token::Comma,
+            Token::Ident("ten".into()),
+            Token::RParen,
+            Token::Semicolon,
+
+            Token::Bang,
+            Token::Minus,
+            Token::Slash,
+            Token::Int("5".into()),
+            Token::Semicolon,
+
+            Token::Int("5".into()),
+            Token::LessThan,
+            Token::Int("10".into()),
+            Token::GreaterThan,
+            Token::Int("5".into()),
+            Token::Semicolon,
+
             Token::Eof,
         ];
 

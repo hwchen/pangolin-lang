@@ -49,6 +49,13 @@ impl Lexer {
         let res = match &[self.ch] {
             b"=" => Token::Assign,
             b"+" => Token::Plus,
+            b"-" => Token::Minus,
+            b"!" => Token::Bang,
+            b"*" => Token::Asterisk,
+            b"/" => Token::Slash,
+
+            b"<" => Token::LessThan,
+            b">" => Token::GreaterThan,
 
             b"," => Token::Comma,
             b";" => Token::Semicolon,
@@ -146,8 +153,8 @@ mod tests {
     use crate::token::Token;
 
     #[test]
-    fn test_next_token_non_ident() {
-        let input = "=+(){},;".to_owned();
+    fn test_next_token_basics() {
+        let input = "=+(){},;-!*/<>".to_owned();
 
         let expected = vec![
             Token::Assign,
@@ -158,6 +165,12 @@ mod tests {
             Token::RBrace,
             Token::Comma,
             Token::Semicolon,
+            Token::Minus,
+            Token::Bang,
+            Token::Asterisk,
+            Token::Slash,
+            Token::LessThan,
+            Token::GreaterThan,
             Token::Eof,
         ];
 
@@ -170,6 +183,8 @@ mod tests {
             if token == Token::Eof {
                 lexed_tokens.push(token);
                 break;
+            } else if token == Token::Illegal {
+                panic!()
             } else {
                 lexed_tokens.push(token);
             }
@@ -220,6 +235,8 @@ mod tests {
             if token == Token::Eof {
                 lexed_tokens.push(token);
                 break;
+            } else if token == Token::Illegal {
+                panic!()
             } else {
                 lexed_tokens.push(token);
             }

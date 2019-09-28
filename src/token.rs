@@ -11,6 +11,13 @@ pub enum Token {
 
     Assign,
     Plus,
+    Minus,
+    Bang,
+    Asterisk,
+    Slash,
+
+    LessThan,
+    GreaterThan,
 
     Comma,
     Semicolon,

@@ -36,6 +36,10 @@ impl Lexer {
         self.read_position += 1;
     }
 
+    fn peek_char(&self) -> Option<&u8> {
+        self.input.as_bytes().get(self.read_position)
+    }
+
     // TODO handle eof better?
     pub fn next_token(&mut self) -> Token {
         // match token from current state, then read the next char.
@@ -47,10 +51,8 @@ impl Lexer {
         self.read_whitespace();
 
         let res = match &[self.ch] {
-            b"=" => Token::Assign,
             b"+" => Token::Plus,
             b"-" => Token::Minus,
-            b"!" => Token::Bang,
             b"*" => Token::Asterisk,
             b"/" => Token::Slash,
 
@@ -65,11 +67,31 @@ impl Lexer {
             b"{" => Token::LBrace,
             b"}" => Token::RBrace,
 
-            //b"fn" => Token::Function,
-            //b"let" => Token::Let,
+            b"=" => {
+                if let Some(peek_ch) = self.peek_char() {
+                    if *peek_ch == 61 {
+                        self.read_char();
+                         Token::Equals
+                    } else {
+                        Token::Assign
+                    }
+                } else {
+                    Token::Assign
+                }
+            },
+            b"!" => {
+                if let Some(peek_ch) = self.peek_char() {
+                    if *peek_ch == 61 {
+                        self.read_char();
+                         Token::NotEquals
+                    } else {
+                        Token::Bang
+                    }
+                } else {
+                    Token::Bang
+                }
+            },
 
-            //b"" => Token::Ident(String),
-            //b"" => Token::Int(String),
             [0] => Token::Eof,
             c => {
                 let res = if is_letter_or_underscore(c[0]) {
@@ -310,6 +332,30 @@ mod tests {
             Token::False,
             Token::Semicolon,
             Token::RBrace,
+
+            Token::Eof,
+        ];
+
+        run_lexer_test(input, expected);
+    }
+
+    #[test]
+    fn test_next_token_two_ch_token() {
+        let input = "
+            10 == 10;
+            10 != 9;
+        ".to_owned();
+
+        let expected = vec![
+            Token::Int("10".into()),
+            Token::Equals,
+            Token::Int("10".into()),
+            Token::Semicolon,
+
+            Token::Int("10".into()),
+            Token::NotEquals,
+            Token::Int("9".into()),
+            Token::Semicolon,
 
             Token::Eof,
         ];

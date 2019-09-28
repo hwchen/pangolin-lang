@@ -101,9 +101,15 @@ impl Lexer {
 
         let bytes = &self.input.as_bytes()[init_position..self.position];
 
+        // match to keyword or ident
         match bytes {
             b"let" => Token::Let,
             b"fn" => Token::Function,
+            b"true" => Token::True,
+            b"false" => Token::False,
+            b"if" => Token::If,
+            b"else" => Token::Else,
+            b"return" => Token::Return,
             b => Token::Ident(String::from_utf8(b.to_vec()).unwrap()),
         }
     }
@@ -193,7 +199,7 @@ mod tests {
     }
 
     #[test]
-    fn test_next_token_complex() {
+    fn test_next_token_01() {
         let input = "
             let five = 5;
             let ten = 10;
@@ -261,6 +267,56 @@ mod tests {
             Token::GreaterThan,
             Token::Int("5".into()),
             Token::Semicolon,
+
+            Token::Eof,
+        ];
+
+        let mut lexer = Lexer::from_str(input);
+        let mut lexed_tokens = vec![];
+
+        loop {
+            let token = lexer.next_token();
+
+            if token == Token::Eof {
+                lexed_tokens.push(token);
+                break;
+            } else if token == Token::Illegal {
+                panic!()
+            } else {
+                lexed_tokens.push(token);
+            }
+        }
+        assert_eq!(lexed_tokens, expected);
+    }
+
+    #[test]
+    fn test_next_token_02() {
+        let input = "
+            if (5 < 10) {
+                return true;
+            } else {
+                return false;
+            }
+        ".to_owned();
+
+        let expected = vec![
+            Token::If,
+            Token::LParen,
+            Token::Int("5".into()),
+            Token::LessThan,
+            Token::Int("10".into()),
+            Token::RParen,
+            Token::LBrace,
+            Token::Return,
+            Token::True,
+            Token::Semicolon,
+            Token::RBrace,
+            Token::Else,
+            Token::LBrace,
+            Token::Return,
+            Token::False,
+            Token::Semicolon,
+            Token::RBrace,
 
             Token::Eof,
         ];

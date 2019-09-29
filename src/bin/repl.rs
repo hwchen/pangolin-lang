@@ -21,11 +21,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 loop {
                     let token = lexer.next_token();
 
+                    println!("  {:?}", token);
                     if token == Token::Eof {
-                        println!("  {:?}", token);
                         break;
-                    } else {
-                        println!("  {:?}", token);
                     }
                 }
             },
